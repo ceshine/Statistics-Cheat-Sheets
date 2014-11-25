@@ -1,0 +1,427 @@
+\documentclass[10pt,landscape, fleqn]{article}
+\usepackage{multicol}
+\usepackage{mathtools}
+\usepackage{calc}
+\usepackage{ifthen}
+\usepackage[landscape]{geometry}
+\usepackage{hyperref}
+
+\ifthenelse{\lengthtest { \paperwidth = 11in}}
+{ \geometry{top=.5in,left=.5in,right=.5in,bottom=.5in} }
+{\ifthenelse{ \lengthtest{ \paperwidth = 297mm}}
+	{\geometry{top=1cm,left=1cm,right=1cm,bottom=1cm} }
+	{\geometry{top=1cm,left=1cm,right=1cm,bottom=1cm} }
+}
+
+% Do not indent equations
+\setlength{\mathindent}{0pt}
+
+% Turn off header and footer
+\pagestyle{empty}
+
+
+% Redefine section commands to use less space
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{0mm}%
+	{-1ex plus -.5ex minus -.2ex}%
+	{0.5ex plus .2ex}%x
+	{\normalfont\large\bfseries}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{0mm}%
+	{-1explus -.5ex minus -.2ex}%
+	{0.5ex plus .2ex}%
+	{\normalfont\normalsize\bfseries}}
+\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{0mm}%
+	{-1ex plus -.5ex minus -.2ex}%
+	{1ex plus .2ex}%
+	{\normalfont\small\bfseries}}
+\makeatother
+
+% Define BibTeX command
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+		T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+% Don't print section numbers
+\setcounter{secnumdepth}{0}
+
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1pt plus 0.5ex}
+
+
+% -----------------------------------------------------------------------
+
+\begin{document}
+	\raggedright
+	\footnotesize
+		
+	\begin{center}
+		\Large{\textbf{Stochastic Modelling Cheatsheet}} \\
+	\end{center}
+	\begin{multicols}{3}
+		% multicol parameters
+		% These lengths are set only within the two main columns
+		%\setlength{\columnseprule}{0.25pt}
+		\setlength{\premulticols}{1pt}
+		\setlength{\postmulticols}{1pt}
+		\setlength{\multicolsep}{1pt}
+		\setlength{\columnsep}{2pt}
+		\section{Probability}
+			\subsection{Countability}
+				A is called \textbf{countable} if A is finite or it's possible to enumerate A by $N$. \par 
+				Countable: $N, Z, Q$ \par 
+				Uncountable: $R, Q^c$ 
+			\subsection{Expectation}
+				Linear: $E[\alpha X + \beta Y] = \alpha E[X] + \beta E[Y]$ \par 
+				Monotone: if $X \leq Y$ then $E[X]\leq E[Y]$ \par
+			\subsection{Tail Sum Formula}
+				If X is nonnegative,
+				Continuous r.v.:
+				\[E[X] = \int_{0}^{\infty}[1-F(x)]dx = \int_{0}^{\infty}P(X > x)dx\]
+				Discrete r.v.:
+				\[E[X] = \sum_{k=1}^{\infty}P(X\geq k)\]
+			\subsection{Moment Generating Function}
+				$m_x(t) = E[e^{tX}]\ \ t \in R$ \par 
+				Distribution of X is determined by mgf provided expectation is finite in a neighborhood of the origin.
+				\[ \frac{d^n}{dt^n}m_x(0) = E[X^n]\]
+				$X, Y$ independent, $Z = X + Y$ is determined by: \par 
+				$m_Z(t) = E[e^{tZ}] = E[e^{tX}] \times E[e^{tY}] = m_X(t) \times m_Y(t)$
+			\subsection{Probability Generating Function}
+				$P_X(t) = E[t^X] \ \ \ |t| \leq 1$ \par 
+				$P_X'(1) = E[X]$, $P_X''(1) = E[X(X-1)]$
+			\subsection{Conditional Probability}
+				\[ P(B|A) = \frac{P(A\cap B)}{P(A)}=\frac{P(A|B)P(B)}{P(A|B)P(B)+P(A|B^c)P(B^c)}\]
+				\[ P_{X|Y} = P(X=x|Y=y) = \frac{P(X=x \cap Y=y)}{P(Y=y)}=\frac{p_{XY}(x,y)}{p_Y(y)} \]
+				\[ E\{g(X)\} = E[E\{g(X)|Y\}] \]
+				Mixed Case ($X$ continuous, $N$ discrete):
+				\[ F_{X|N}(x|n) = \frac{P(X \leq x \cap N=n)}{P(N=n)} \]
+				\[ f_{X|N} = \frac{d}{dx}F_{X|N}(x|n) \]				
+			\subsection{Random Sums}
+			    $ X = \sum_{n=1}^{N}\xi_n $, $\xi_n$'s are i.i.d and $\xi_n \perp N$ \par 
+			    If $E[\xi_n] = \mu$, $ Var[\xi_n] = \sigma^2$, $E[N] = \nu$, $Var[n]=\tau^2$, \par 
+			    $E[X] = \mu \nu$, $Var[X] = \mu^2\tau^2+\nu\sigma^2$ 
+			    \[m_x(t) = E[m_\xi^N(t)] = P_N(m_\xi(t)) \]
+			    if $a < 0 < b$:
+			    \[ P(a < X \leq b) = \int_{a}^{b}\{f^{(n)}(x)p_N(n)\}dx + p_N(0) \]
+			    if $a < b < 0$ or $0 < a < b$:
+			     \[ P(a < X \leq b) = \int_{a}^{b}\{f^{(n)}(x)p_N(n)\}dx \]
+		\section{Markov Chain}
+			\subsection{Definition}
+				A \textbf{Markov Chain} $X\{t\}$ is a stochastic process such that simultaneously
+				\begin{enumerate}
+					\item Countable state space $S$
+					\item Discrete time $T = N_0 = {0, 1, 2, ...}$
+					\item Satisfies Markov property 
+					\item Satisfies stationary transition property
+				\end{enumerate}
+				\subsubsection{Markov Property}
+				\[ P(X_{t+1}|X_0=x_0,...,X_t=x_t) = P(X_{t+1}|X_t=x_t) \]
+				\subsubsection{Stationary Transition Property}
+				\[ P(X_{t+1}|X_t=x) = P(X_1|X_0=x) \]
+				\subsubsection{Absorbing State}
+					State $a$ is absorbing whenever \\
+					 $P(a,a) = 1$ and $P(a, y)=0$ for $y \neq a$
+			\subsection{Recurrence and Transience}
+				\subsubsection{Hitting Time}
+				\[ T_A = inf\{\ t > 0 : X_t \in A \}\]
+				\subsubsection{First Step Analysis}
+				\[
+				\begin{split}
+				U_{ik} :&= P({\mbox{Absorbed in state k}}) \\
+				&= P_{ik} + \sum_{j=0}^{r-1}U_{jk}P_{ij} \\
+				w_i :&= \sum_{n=0}^{T_A-1}g(X_n) \\
+				&= g(i) + \sum_{j=0}^{r-1}P_{ij}w_j\\
+				v_i :&= E_i[T_A]  \\
+				&=  1 + \sum_{j=0}^{r-1}P_{ij}v_j
+				\end{split}
+				\]
+				\subsubsection{Hitting Probability}
+				\[ \rho_{xy} := P_x(T_y < \infty) = P(T_y < \infty | X_0 = x ) \]
+				\[ \rho_{xC} = \sum_{z \in C}P(x,z) + \sum_{z \in S_T}P(x,z)\rho_{zC} \]
+				A state y is called
+				\begin{itemize}
+					\item Recurrent whenever $\rho_{yy}=1$
+					\item Transient whenever $\rho_{yy}<1$
+				\end{itemize}
+				Recurrent states need not to be absorbing. Absorbing states are recurrent.
+			\subsection{Markovian Martingale Property}
+				\[\sum_{y\in S} yP(x, y) = x \mbox{ for all x} \in S\]
+				For a Markovian Martingale with state Space $S = {0, 1, ..., d} $, and only state 0 and d are absorbing. We have $\rho_{xd} = x/d$
+			\subsection{Branching Process}
+				Offspring $\xi, \xi_k, \xi_{k, t+1}$ are i.i.d r.v.'s \par
+				$X_{t+1} = \sum_{k=1}^{X_t} \xi_{k,t+1}$ \par
+				$P(x,y) = P\{\sum_{k=1}^{x}\xi_k = y\}$	\par
+				Probability generating function: $P_\xi(u) = E[u^\xi]$	\par	
+				Possibility of extinction:\par
+				if $P(\xi=1) = 1$ then $\rho_{01} = 0$ \par 
+				if $P(\xi=1) < 1$ and $E[\xi] = P'_\xi(1) \leq 1$ then $\rho_{01}=1$ \par 
+				if $E[\xi] > 1$ then $\rho_{01} < 1$, \par 
+				$\rho_{10} $ is the smallest nonnegative solution to $ u = P_\xi(u) $
+			\subsection{Stationary Distribution}
+				\begin{enumerate}
+					\item $\pi$ is a valid pmf
+					\item $\pi P = \pi$
+				\end{enumerate}
+				Existence of an unique $\pi$ i.f.f. an \textbf{irreducible positive recurrent} chain
+			\subsection{Steady State Distribution}
+	       		If exists a steady state distribution $\pi$ :
+				\begin{enumerate}
+					\item $\pi = lim_{t\rightarrow\infty}\pi_0P^t$ for all initial state $\pi_0$
+					\item Existence: $\pi$ is a stationary distribution
+					\item Uniqueness: $\pi$ is the only stationary distribution 
+				\end{enumerate}
+				Not the other way around: Unique stationary distribution does not guarantee a steady state distribution.
+		    \subsection{Birth \& Death Chain}
+		    	\[ P(x, y) = \left\{ \begin{array}{c l}
+		    		 q_x, & if\ y = x - 1 \\
+		    		 r_x, & if\ y = x\\
+		    		 p_x, & if\ y = x + 1\\
+		    		 0, & otherwise
+		    		\end{array} \right.
+		    	\]
+				$ irreducible \Leftrightarrow q_x, p_x > 0\ for\ all\ x > 0\ and\ p_0 > 0 $ \par
+				$
+					\gamma_0 = 1,\  \gamma_y = \frac{\prod_{i=1}^yq_i}{\prod_{i=1}^yp_i} = 
+					\prod_{i=1}^y\frac{q_i}{p_i}
+				$ \par
+				$P_x(T_a < T_b) = \frac{\sum_{y=x}^{b-1}\gamma_y}{\sum_{z=a}^{b-1}\gamma_z}$ \par
+				$\rho_{10} = \lim\limits_{b\rightarrow\infty}P_1(T_0 < T_b) = 1 - 1 / \sum_{z=0}^{\infty}\gamma_z$ \par
+				$Recurrent \Leftrightarrow \sum_{z=0}^{\infty}\gamma_z = \infty $\par
+				$\delta_0 := 1$ and $\delta_y := \frac{\rho_0 \times ... \times \rho_{y-1}}{q_1\times...\times q_y} $\par
+				Stationary distribution exists: $\sum_{y=0}^{\infty}\delta_y < \infty$ ($p < 1/2$)\par
+				$\pi(x) = \frac{\delta_x}{\sum_{y=0}^{\infty}\delta_y}$ \par 
+				Stationary distribution = S.S.D. only when $r \neq 0$ (aperiodic)
+			\subsection{Positive/Null Recurrent}
+				$\left\{\begin{array}{c l}
+					Positive\\
+					Null \end{array}
+				 \right\}$ recurrent if $m_y = E_y[T_y] = 
+				 \left\{\begin{array}{c l}
+				 < \infty\\
+				 = \infty \end{array}
+				 \right\}
+				 $ \par
+				 If S is finite:\\
+				 \begin{itemize}
+				 	\item S has at least one positive recurrent state
+				 	\item S has no null recurrent state
+				 \end{itemize}
+ 				 \subsubsection{The existence and uniqueness of stationary distribution} 
+				 An \textbf{irreducible and positive recurrent} chain has an unique stationary distribution $\pi$ with $\pi(x) = 1/m_y$\par
+				 Null positive recurrent chain doesn't have a stationary distribution. \par
+				 The proportion of time spent in state y is $\frac{\rho_{xy}}{m_y}$
+			\subsection{Period of a State}
+				$ x \in S $
+				$ I_x = \{ n \geq 1:\ P^n(x,x)>0  \}$\\
+				$ d_x :=$ g.c.d of $I_x$\\
+				$ d_x $ is the period of state x\\
+				if $ x \leftrightarrow y$ then $d_x = d_y$ \\
+				\textbf{Aperiodic}: An irreducible Markov chain with  $d_x = 1$ for all $x \in S$ 
+			\subsection{Regular Chain}
+				For some $n \in N$, $P^n$ has strongly positive entires:
+				$P^n(x,y) > 0 $ for all $ x, y \in S$\\
+				$ d = d_x = 1$
+			\subsection{Existence of Steady State Distribution}
+				When a Markov chain is:
+				\begin{enumerate}
+					\item irreducible
+					\item positive recurrent
+					\item aperiodic
+				\end{enumerate}
+				
+				
+		\section{Pure Jump Process}
+			\begin{enumerate}
+				\item State space S is countable
+				\item Sample paths are \textbf{right-continuous}
+			\end{enumerate}
+			Time of explosion: $\tau_\infty := \lim\limits_{n\rightarrow \infty}\tau_n$
+			\subsection {Pure Jump Markov Process}
+				$P_{x_0}\{X(s_1)=x_1,...,X(s_n)=x_n)\} = \prod_{i=0}^{n-1}P_{x_i,x_{i+1}}(s_{i+1}-s_i)$
+			\subsection{Embedded Markov Chain}
+				Let $\tau_0 = 0 < \tau_1 \leq \tau_2 \leq \tau_n < \infty$ be the holding times \par
+				Let $X_0 \neq X_1, X_1 \neq X_2, ..., X_{n-1}$ be the associated states \par
+				$q_x=1/E_x(\tau_1)$ , $q_{xx}=-q_x$, $\sum_{i=0}^{N}q_{ji}=0$\par
+				$Q_{xy}=P_x\{X(\tau_1)=y\}$ (X non-absorbing)\par
+				$q_{xy} = q_xQ_{xy}$\par
+				$\{X_n\}$ is a Markov chain with initial distribution $\pi_0$ and trasition matrix $Q$ \par
+				As long as $\tau_n < \infty$, 
+				\[ X(t) = \sum_{k-0}^{n}X_k 1_{[\tau_k,\tau_{k+1})}(t)\] 
+			\subsection {Chapman-Kolmogorov Equation }
+			$ P_{xy} = \sum_{z \in S} P_{xz}(t)P_{zy}(s) $
+			\subsection {Forward and Backward Equations}
+			\[ P'_{xy}(t) = \sum_{z\in S} q_{xz}P_{zy}(t) \]
+			\[ P'_{xt}(t) = \sum_{z \in S} P_{xz}(t)q_{zy}\]
+			\subsection{Birth \& Death Process}
+				\subsubsection{The Condition of Explosion}
+				\[ \tau_{\infty} = lim_{n\rightarrow\infty}\tau_n < \infty \Leftrightarrow 
+					\sum_{x=0}^{\infty}\frac{1}{\lambda_x} + \sum_{y=1}^{\infty}\sum_{x=y}^{\infty}
+					\frac{\mu_x...\mu_{x-y+1}}{\lambda_x...\lambda_{x-y}} \]  \par
+				$\Rightarrow$ no explosion for sublinear birth rates \par 
+				Stationary distribution:
+				\[ \delta_0 = 0, \delta_y = \frac{\lambda_0...\lambda_y-1}{\mu_1...\mu_y}\]
+				\[ \pi(x) = \frac{\delta_x}{\sum_{y=0}^{\infty}\delta_y} \]
+				$X(t)$ transient $\Leftrightarrow$ $X_n$ transient 
+				$\Leftrightarrow \sum_{y=1}^{\infty}\frac{\mu_1...\mu_y}{\lambda_1...\lambda_y} < \infty$ 
+			\subsection{Linear ODE}
+				The solution to $f'(t) = -cf(t) + g(t), t \geq 0$ is \par 
+				$f(t) = f(0)e^{(-ct)} + \int_{0}^{t}e^{-c(t-s))}g(s)ds$
+			\subsection{Poisson Process}
+				\subsubsection{Homogeneous}
+				$X(0) = 0$ \par
+				$P_{xy}(t)=e^{-\lambda t} (\lambda t)^{y-x}/(y-x)!$, if x $\leq$ y \par
+				$X(t) - X(s) \sim Poisson\{\lambda(t-s)\}$ \par
+				$\tau_{k}-\tau_{k-1} \sim Exponential(\lambda)$ \par 
+				mgf $m_X(s) = E[e^{sX}] = exp(\lambda_X(e^t-1))$ \par 
+				\subsubsection{Superposition}
+				If $X \sim Poisson(\lambda_X)$ and $Y \sim Poisson(\lambda_Y)$, X, Y independent,
+				then $X + Y \sim Poisson(\lambda_X + \lambda_Y)$
+				\subsubsection{Thinning}
+				If $\xi_1, \xi_2,... \overset{i.i.d}{\sim} Bernoulli(p) $ then
+				$\sum_{l=1}^{X}\xi_k \sim Poisson(p\lambda_X)$
+				\subsubsection{Inhomogeneous}
+				Homogeneous: $\lambda_X = \lambda > 0$ \par 
+				Inhomogeneous: $\lambda_X(t) \geq 0$, \par
+          		$\Lambda(t) = E[X(t)] = \int_{0}^{t}\lambda_X(u)du$ \par 
+          		$X(t) - X(s) \sim Poisson\{\Lambda_X(t) - \Lambda_X(s) \}$ \par 
+				Satisfies Markov property, but not stationary transition property
+				\subsubsection{Compound Poisson Process}
+				Let $X(t) \sim Poisson(\lambda)$, \par
+				$Y_n$ are i.i.d r.v.'s with $G(y) = P(Y_n \leq y) $
+				\[ Z(t) = \sum_{k=1}^{X(t)}Y_k \]
+				Let $E[Y_n] = \mu$ and $Var(Y_n) = \sigma^2$ Then \par 
+				$E[Z(t)] = \lambda \mu t $ and $Var[Z(t)] = \lambda(\mu^2+\sigma^2)t$ 
+				\[ F_{Z(t)}(t) = e^{(-\lambda t)}1_{[0, \infty)}(x) + \sum_{n=1}^{\infty}
+					\frac{e^{(-\lambda t)}(\lambda t)^n}{n!} G^{(n)}(x) \]
+				Failure Time (critical value $a$): \par 
+				$\{F > t\} = \{ Z(t) < a \} $ , $P(F > t) = F_{Z(t)}(a)$\par 
+				$E[F] = \int_{0}^{\infty}P(F>t)dt=\lambda^{-1}\sum_{n=0}^{\infty}G^{(n)}(a)$ \par 
+				If $Y_n \sim Exponential(\mu)$, then\par
+				$E[F] = \frac{1+\mu a}{\lambda}$
+				\subsection{Long Run Behaviour}
+				Solve $\pi q = 0$.
+				\[ \pi(x) = \left\{ 
+				\begin{array}{c l}
+					\frac{1}{q_xm_x} & x \in C \\
+					0 & x \notin C 
+				\end{array} \right.
+				\]
+				$C$ is the union of positive recurrent communication classes.
+				\textbf{Irreducible positive recurrent process} $\Rightarrow$ steady state distribution exists.
+				
+				\subsection{Infinite Server Queue}
+				$\lambda_x=\lambda$, $\mu_x = \mu x$ \par 
+				$\pi(x) = \frac{(\lambda/\mu)^x}{x!} e^{-\lambda/\mu}$
+				
+				\subsection{Finite(N-server) Server Queue}
+				\[\lambda_x = \lambda, \mu_x = \left\{ 
+					\begin{array}{c l}
+					x\mu & a \leq x < N \\
+					N_\mu & x \geq N
+					\end{array}	
+				\right. \]
+				
+		\section{Gaussian Process}
+			\subsection{Univariate Gaussian Distribution}
+			$X \sim Normal(\mu, \sigma^2)$ \par 
+			mgf $m_X(T) = exp(\mu t + \sigma^2 t^2 / 2)$
+			\subsection{Bivariate Gaussian Distribution}
+			$X = (X_1, X_2)' \sim N(\mu, \Sigma)$
+			\[  \mu = \left( \begin{array}{c l} \mu_1 \\ \mu_2 \end{array} \right) ,
+				\Sigma = \left( \begin{array}{c l}
+				\Sigma_{1,1} & \Sigma_{1,2} \\
+				\Sigma_{2,1} & \Sigma_{2,2}
+			\end{array}\right) \]
+			mgf $m_X(T) = exp(\mu't + t'\Sigma't/2)$
+			\subsection{Multivariate Gaussian Distribution}
+			$pdf$ exist $\Leftrightarrow det\Sigma_x \neq 0$ Then 
+			\[ f(x) = \frac{1}{(2\pi)^{d/2}\sqrt{det(\Sigma)}}exp(-\frac{1}{2}(x-\mu)'\Sigma^{-1}(x-\mu)) \]
+			
+			\subsection{Conditional Distribution: Bivariate}
+			\[E[X_1|X_2] = E[x_1] + \frac{Cov(X_1, X_2)}{Var(X_2)}(X_2-E[X_2])\]
+			\[Var(X_1|X_2) = Var(X_1)-\frac{Cov(X_1,X_2)^2}{Var(X_2)}\]
+			$X_1|X_2=x_2 ~ N(E[X_1|X_2=x_2], Var(X_1|X_2=x2))$
+			
+			\subsection{Conditional Distribution: Multivariate}
+			\[  \mu_X = (\mu_X', \mu_Y')' ,
+				\Sigma_Z = \left( 
+				\begin{array}{c l}
+				\Sigma_X & C'_{XY} \\
+				C_{XY} & \Sigma_Y 
+				\end{array}
+			\right)\]
+			Find $b$ s.t. $\Sigma_Yb' = C_{XY}$ \par 
+			$\mu_{X|Y=y} = E[X] + b(y - E[Y])$ \par 
+			$\Sigma_{X|Y=y} = \Sigma_X - bC_{XY}$ \par 
+			$ X|Y=y \sim N(\mu_{X|Y=y}, \Sigma_{X|Y=y})$
+			
+			\subsection{Gaussian Process}
+			$\{X(t)\}_{t \in [0, \infty]}$, for all $d$, $t_1,...t_d \in [0, \infty)$,\par 
+			$(X(t_1),...,X(t_d)$ is a d-dimensional Gaussian vector.
+			
+			\subsection{Brownian Motion}
+			$\{W(t): t \in [0,\infty)\}, W(0) = 0$ \par
+			For $t \geq s \geq 0, W(t) - W(s) \sim N(0, \sigma^2(t-s))$ \par
+			Increments of non-overlapping time intervals are independent \par
+			$r_W(s,t) = Cov(W(s), W(t)) = \sigma^2 min\{s, t\}$
+			
+			\subsection{Brownian Bridge}
+			$ B = \{B(t): 0 \leq t \leq 1\}$\par 
+			$\mu_B(t) = 0,\ r_B(s,t) = \sigma^2 \{min\{s, t\}-st\}$
+			
+			\subsection{Geometric Brownian Motion}
+			$S(t) := s_0 e^{\alpha t + \sigma W(t)}$ \par
+			If $s_0 = 1$, $\alpha = 0$, and $\sigma=1$, then $\mu_S(t) = e^{t/2}$ and
+			$r_S(s,t) = e^{(s+t)/2}(e^{min\{s,t\}} - 1) $\par
+			Log-normal distribution of r.v. X: \par 
+			$E[X] = exp(\mu + \sigma^2/2)$
+			\[f(x) = \frac{1}{\sqrt{2\pi}\sigma x}exp(-\frac{(\ln x - \mu)^2}{2\sigma^2})\]
+			\subsection{Reflection Principle}
+			$P(W(t) > 0) = P(W(t)<0) = 1/2$ \par
+			$P(W(t) > a) = P(T_a \leq t) / 2$ \par
+			$F_{T_1}(t) = P(|W(t)|>a) = 2 (1-\Phi(a/\sqrt{\sigma^2 t}))$ \par 
+			Let $M(t) := max_{0\leq s \leq t} W(s)$, $M_t \overset{D}{=} |W(t)|$
+
+			\subsection{Brownian Martingale}
+			One of NASC: $\mu_X(t) \equiv const$
+			
+			\subsection{Donsker's Theorem}
+			Let $\xi, \xi_1, \xi_2, ...$ be i.i.d. r.v.'s with $E[\xi] = 0$ and $Var(\xi)=\sigma^2$ \par 
+			Let $S_n = \sum_{k=1}^{n}\xi_k$. For $\bigtriangleup_t, \bigtriangleup_x > 0$ define: \par 
+			$ X_{\bigtriangleup}(t) := X_{\bigtriangleup_t, \bigtriangleup_x}(t) := 
+			   \bigtriangleup_xS_{[t/\bigtriangleup_t]}$ \par 
+			$\mu_{X_{\bigtriangleup}}(t) = \bigtriangleup_xE(S_{[t/\bigtriangleup_t]}) \equiv 0$ \par 
+			$r_{X_{\bigtriangleup}}(t) = \bigtriangleup_x^2E(S_{[t/\bigtriangleup_t]}S_{[s/\bigtriangleup_t]}) =  \bigtriangleup_x^2 \sigma_2 min\{[t/\bigtriangleup_t], [s/\bigtriangleup_t]\} $ \par 
+			take $\bigtriangleup_x := \sqrt{\bigtriangleup_t}$
+			\[ \mbox{Theorem: } X_\bigtriangleup \overset{D}{\rightarrow} W \ \ \ \ \ \bigtriangleup_t = \bigtriangleup_x^2 \downarrow 0 \]
+			CLT: $\bigtriangleup_t = 1/n$ 
+			\[P(\frac{S_n}{\sqrt{n}} \leq x) = P(X_\bigtriangleup(1) \leq x) \approx P(W(1)\leq x)  = \Phi(\frac{x}{\sigma})\]
+			
+			\subsection{Heat Equation}
+			\[ \frac{\partial}{\partial t}f(t,x) = \frac{\sigma^2}{2} \frac{\partial^2}{\partial x^2}f(t,x)\]
+			
+			\subsection{Boundary Crossing with Drift}
+			\[ P(T_b^\mu < T_a^\mu) = \frac{exp(-2\mu a/\sigma^2) -1}{exp(-2\mu a/\sigma^2) - exp(-2\mu b/\sigma^2)} \]
+			
+			\subsection{Integrated Brownian Motion}
+			\[Y(s) = \int_{0}^{s}W(u)du\]
+			Gaussian(the limit of a linear combination of normal r.v.) \par 
+			$\mu_Y = E[Y(s)] = E[\int_{0}^{s}W(u)du] =\int_{0}^{s}\mu_W(u)du = 0 $ \par  
+			$r_Y(s, t) = Cov\{Y(s), Y(t)\} = \frac{s^2(3t-s)}{6}, s \leq t$ \par 
+			Not Markovian $\Rightarrow Cov\{Y(t)-Y(s), Y(s) = s^2(t-s)/2 \neq 0\}$ \par
+			$Cov\{Y(s), W(t)\} = s min\{s,t\} - (min\{s,t\}^2/2)$
+			
+			\subsection{White Noise}
+			\[
+			\begin{split}
+			Y=\int_{a}^{b}g(t)W'(t)dt &= \int_{a}^{b}g(t)dW(t) \\ 
+			&= g(b)W(b)-g(a)W(a) - \int_{a}^{b}g'(t)W(t)dt
+			\end{split} \]
+			White noise: $W'(t)$ or $dW(t)$ \par 
+			Gaussian\par 
+			$E[y] = 0$\par 
+			$r_Y(s,t) = \sigma^2\int_{0}^{min\{s,t\}}g^2(u)du$\par 
+			$r_Y(t,t) = \sigma^2\int_{0}^{t}g^2(u)du$ \par
+			if $g(t) = 1$, then $Y(t) = W(t)$ \par 
+			
+	\end{multicols}
+\end{document}
